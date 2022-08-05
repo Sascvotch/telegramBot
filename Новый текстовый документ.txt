@@ -1,0 +1,26 @@
+ @Scheduled(cron = "0 0/1 * * * *")
+    public void run() {
+        LocalDateTime  nowTime= LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        List<Task> nowTask= taskRepository.getTasksByTaskDateLike(nowTime);
+        for (int i=0;i<nowTask.size();i++ ){
+            SendMessage outMessage = new SendMessage(nowTask.get(i).getIdChat(), nowTask.get(i).getTaskText());
+            SendResponse response = telegramBot.execute(outMessage);
+
+        }
+    }
+
+ Task task=new Task(update.message().chat().id(),item,LocalDateTime.parse(update.message().text(), DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
+           taskRepository.save(task);
+            String str1="Дата:" + date + " Задача:"+item;
+            SendMessage outMessage = new SendMessage(update.message().chat().id(), str1);
+            SendResponse response = telegramBot.execute(outMessage);
+
+  String str="([0-9\\.\\:\\s]{16})(\\s)([\\W+]+)";
+            Pattern pattern = Pattern.compile(str);
+            String date = "";
+            String item="";
+            Matcher matcher = pattern.matcher(update.message().text());
+            if (matcher.matches()) {
+                date = matcher.group(1);
+                item = matcher.group(3);
+            }
